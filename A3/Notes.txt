@@ -1,0 +1,81 @@
+In driver.cpp 
+Just need to use up previous ast in assignment 2. 
+Then instead of print() in ast we need to use gen_code to generate assembly code. 
+
+For doing gen_code . Look at gcc compilation. 
+Look at the template, then generate the template. 
+In what order everything is done. so basically need to start working on internals in gcc. 
+
+alias mygcc='gcc -fno-asynchronous-unwind-tables -fno-exceptions -fno-pic -fverbose-asm -fno-stack-protector -mmanual-endbr  -mpreferred-stack-boundary=2 -m32'
+-- to generate clean assembly code. 
+
+cc -o exec -m32 phase1.s  # -> this also works  
+
+alias mygcc='gcc -fno-asynchronous-unwind-tables -fno-exceptions -fno-pic -fno-stack-protector  -mpreferred-stack-boundary=2 -m32'
+
+
+clang -m32 phase1.s -o exec
+
+NOTE: Next time you start by looking at assembly code of print statements and try to replicate them. In print part of ast tree. 
+
+Just spend quick 30 minutes to get everything to your local machine and then start working on it. 
+
+
+Phase        ''Description                         Weightage
+
+P0      Handle valid printf calls                    0
+
+P1  Assignment statements involving only scalars (INT) 7
+
+P2  Selection and Iterative statements (IF, FOR, WHILE) 5
+
+P3  Function definitions and function calls             5
+
+P4  Structures and Field access operator                3
+
+P5  Pointers and related operations                     5
+
+P6  Arrays and related operations                       5
+
+
+# How to install gcc-8 in ubuntu 18.04
+
+# how to push front in a c++ vector 
+# https://www.geeksforgeeks.org/vector-insert-function-in-c-stl/
+vector<int> vec;
+vec.insert(vec.begin(), 2); // insert 2 at the front of the vector
+
+
+
+Phase 4 -> Struct 
+member_astnode 
+
+Phase 5 -> arrow_astnode 
+ADDR &, PTR* 
+Unary operator 
+
+
+Phase 6 -> arrayref 
+arrayref_astnode
+
+a[10] = 5; 
+== *(a+10) = 5;
+leal (offset + 10 * size ) (%ebp), %eax
+a[10] 
+
+= 10 -> eax 
+offset + eax -> eax 
+ebp + eab -> eax 
+(eax) -> eax 
+
+
+string return_type  = .. '
+// check  if return_type startswith  "struct"  in  c++
+return_type.substr(0, 6) == "struct"
+
+// how to remove last  character of string   in c++
+s.substr(0, s.size()-1)
+
+
+// how to get last character of a string 
+s[s.size()-1]

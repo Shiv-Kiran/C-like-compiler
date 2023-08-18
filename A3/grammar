@@ -1,0 +1,219 @@
+----------------------------------------------------
+
+start symbol is translation_unit
+
+----------------------------------------------------
+program
+  : main_definition // P1 
+  | translation_unit main_definition // P3
+
+translation_unit: 
+    struct_specifier // P4
+  |  function_definition // P3
+  | translation_unit struct_specifier // P4
+  | translation_unit function_definition // P3
+
+struct_specifier:
+    STRUCT IDENTIFIER LCB declaration_list RCB EOS // P4      
+
+function_definition:  
+    type_specifier IDENTIFIER LRB RRB compound_statement // P3
+    type_specifier IDENTIFIER LRB parameter_list RRB compound_statement // P3
+
+/*  Main Function */
+main_definition:
+    INT MAIN LRB RRB compound_statement // P1
+
+/* Type Specifier */
+
+type_specifier:
+    VOID // P3
+  | INT // P1
+  | STRUCT IDENTIFIER // P4
+
+/* Declartion List */
+
+declaration_list:
+    declaration // P1
+  | declaration_list declaration // P1
+
+declaration:
+    type_specifier declarator_list EOS // P1
+  
+declarator_list:
+    declarator // P1
+  | declarator_list COMMA declarator // P1
+
+declarator:
+    declarator_arr // P1
+    | OP_MUL declarator // P5 
+
+declarator_arr:
+    IDENTIFIER // P1
+  | declarator_arr LSB CONSTANT_INT RSB // P1
+
+
+/* Parameter List */ 
+parameter_list:
+    parameter_declaration // P3
+  | parameter_list COMMA parameter_declaration // P3
+
+parameter_declaration:
+    type_specifier declarator // P3
+
+/* Statements */
+
+compound_statement:
+    LCB RCB // P1
+  | LCB statement_list RCB // P1
+  | LCB declaration_list statement_list RCB // P1
+
+statement_list:
+    statement // P1
+  | statement_list statement // P1  
+
+statement:
+    EOS // P1 
+    | LCB statement_list RCB // P1
+    | assignment_expression EOS // P1
+    | selection_statement // P2
+    | iteration_statement // P2
+    | procedure_call // P3
+    | printf_call // P1 
+    | RETURN expression EOS // P1
+
+/* Expression */
+assignment_expression:
+  unary_expression OP_ASSIGN expression // P1
+
+expression:
+  logical_and_expression // P1
+  | expression OR_OP logical_and_expression // P1
+
+logical_and_expression:
+  equality_expression // P1
+  | logical_and_expression OP_AND equality_expression // P1
+
+equality_expression:
+  relational_expression // P1
+  | equality_expression OP_EQ relational_expression // P1
+  | equality_expression OP_NEQ relational_expression // P1
+
+
+relational_expression:
+    additive_expression 
+  | relational_expression OP_LT additive_expression // P1
+  | relational_expression OP_GT additive_expression // P1
+  | relational_expression OP_LTE additive_expression // P1
+  | relational_expression OP_GTE additive_expression // P1
+
+additive_expression:
+    multiplicative_expression // P1
+  | additive_expression OP_ADD multiplicative_expression
+  | additive_expression OP_SUB multiplicative_expression  
+
+multiplicative_expression:
+    unary_expression  // P1
+  | multiplicative_expression OP_MUL unary_expression 
+  | multiplicative_expression OP_DIV unary_expression   
+  
+unary_expression:
+    postfix_expression // P1
+  | unary_operator unary_expression // P1
+
+postfix_expression:
+    primary_expression // P1
+  | postfix_expression OP_INC // P1
+  | IDENTIFIER LRB RRB // P3
+  | IDENTIFIER LRB expression_list RRB // P3
+  | postfix_expression OP_MEM IDENTIFIER // P4
+  | postfix_expression OP_PTR IDENTIFIER // P5
+  | postfix_expression LSB expression RSB // P6
+
+primary_expression:
+    IDENTIFIER // P1
+  | CONSTANT_INT // P1
+  | LRB expression RRB // P1
+
+unary_operator:
+  | OP_SUB // P1
+  | OP_NOT // P1
+  | OP_ADDR // P5
+  | OP_MUL // P5
+
+/* Selection Statement */ 
+selection_statement:
+ IF LRB expression RRB statement ELSE statement // P2
+
+iteration_statement: 
+  WHILE LRB expression RRB statement // P2
+  | FOR LRB assignment_expression EOS expression EOS assignment_expression RRB statement // P2
+
+/* Expression List */
+expression_list:
+  expression // P1
+  | expression_list COMMA expression // P1
+
+/* Procedure Call */
+procedure_call:
+  IDENTIFIER LRB RRB EOS // P3
+  | IDENTIFIER LRB expression_list RRB EOS // P3
+
+/* printf Call */
+printf_call:
+  PRINTF LRB CONSTANT_STR RRB EOS // P1
+  | PRINTF LRB CONSTANT_STR COMMA expression_list RRB EOS // P1
+
+
+-----------------------------------------------------------------------------------------
+
+A description of integer and float constants. Not part of the grammar.  
+
+Numeric constants are defined as: 
+
+C-constant:
+  C-integer-constant
+  floating-point-constant
+ 
+C-integer-constant:
+  [1-9][0-9]*
+  0[bB][01]*
+  0[0-7]*
+  0[xX][0-9a-fA-F]*
+ 
+floating-point-constant:
+  integer-part.[fractional-part ][exponent-part ]
+
+integer-part:
+  [0-9]*
+ 
+fractional-part:
+  [0-9]*
+ 
+exponent-part:
+  [eE][+-][0-9]*
+  [eE][0-9]*
+
+The rule given above is not entirely accurate. Correct it on the basis of the following examples:
+
+1.
+23.1
+01.456
+12.e45
+12.45e12
+12.45e-12
+12.45e+12
+
+The following are not examples of FLOAT_CONSTANTs:
+
+234
+.
+
+We have not yet defined STRING_LITERALs. For our purpose, these are
+sequence of characters enclosed within a pair of ". If the enclosed
+sequence contains \ and ", they must be preceded with a \. Apart from
+\and ", the only other character that can follow a \ within a string
+are t and n. 
+
+
+
